@@ -28,10 +28,67 @@ var tracker = {
   imageTwo: document.createElement('img'),
   imageThree: new Image(), // Example to show that the Image constructor can be used
 
+  //create random number
   getRandomIndex: function() {
     return Math.floor(Math.random() * allProducts.length);
   },
 
+  generateChart: function() {
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var options = {
+    type: 'bar',
+    data: {
+      labels: allProducts.map(function(x) {return x.name;}),
+      datasets: [{
+        label: '# of Votes',
+        data: allProducts.map(function(x) {return x.votes;}),
+        backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+              'rgba(255, 159, 64, 0.2)'
+          ],
+          borderColor: [
+              'rgba(255,99,132,1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)'
+          ],
+        borderWidth: 1
+      },
+      /*{
+        label: '# of Votes',
+        data: [12, 19, 3, 5, 2, 3],
+        borderWidth: 1
+      }*/]
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      }
+    }
+    };
+
+    var myChart = new Chart(ctx, options);
+    tracker.clickCount++;
+  },
+
+  createButton: function() {
+    var btn = document.createElement('button');        // Create a <button> element
+    var t = document.createTextNode("Reset");       // Create a text node
+    btn.appendChild(t);                                // Append the text to <button>
+    document.body.appendChild(btn);
+  },
+
+  //having this gives you a constant variable to use as a random number fo each image
   displayImages: function() {
     var idOne = this.getRandomIndex();
     var idTwo = this.getRandomIndex();
@@ -59,20 +116,32 @@ var tracker = {
   onClick: function(event) {
     console.log(event.target.id);
 
-    if(event.target.id === 'images') {
-      console.log('didnt click an image');
-      return;
-    } else {
-      tracker.clickCount++;
-
-      for(var i in allProducts) {
-        if(event.target.id === allProducts[i].name) {
-          allProducts[i].votes++;
+    if (tracker.clickCount < 3) {
+      if(event.target.id === 'images') {
+        console.log('didnt click an image');
+        return;
+      } else {
+        tracker.clickCount++;
+        console.log('click count', tracker.clickCount)
+        for(var i in allProducts) {
+          if(event.target.id === allProducts[i].name) {
+            allProducts[i].votes++;
+          }
         }
+
+        tracker.displayImages();
       }
 
-      tracker.displayImages();
-    }
+    } else {
+      if (tracker.clickCount === 3) {
+        tracker.createButton();
+        tracker.generateChart();
+
+      }
+
+
+
+        }
   }
 };
 

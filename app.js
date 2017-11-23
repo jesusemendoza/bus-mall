@@ -93,11 +93,33 @@ var tracker = {
     tracker.clickCount++;
   },
 
+  localStorageSet: function() {
+      localStorage.clear();
+      var encodeAllProducts = JSON.stringify(allProducts);
+      localStorage.setItem('AllProducts',encodeAllProducts);
+  },
+
+  localStorageGet: function() {
+      var obj = JSON.parse(localStorage.getItem('AllProducts'))
+      if (obj != null){
+        allProducts = obj;
+      };
+  },
+
+  onClickButton: function(event) {
+    console.log(event.target.id);
+    localStorage.clear();
+    location.reload();
+  },
+
   createButton: function() {
     var btn = document.createElement('button');        // Create a <button> element
-    var t = document.createTextNode("Reset");       // Create a text node
+    var t = document.createTextNode("Reset");
+    btn.id = 'btn';      // Create a text node
     btn.appendChild(t);                                // Append the text to <button>
     document.body.appendChild(btn);
+    var buttonEl = document.getElementById('btn');
+    buttonEl.addEventListener('click', tracker.onClickButton);
   },
 
   //having this gives you a constant variable to use as a random number fo each image
@@ -128,7 +150,7 @@ var tracker = {
   onClick: function(event) {
     console.log(event.target.id);
 
-    if (tracker.clickCount < 3) {
+    if (tracker.clickCount < 25) {
       if(event.target.id === 'images') {
         console.log('didnt click an image');
         return;
@@ -145,10 +167,11 @@ var tracker = {
       }
 
     } else {
-      if (tracker.clickCount === 3) {
+      if (tracker.clickCount === 25) {
         tracker.createButton();
         tracker.generateChart();
-
+        tracker.localStorageSet();
+        tracker.clickCount++;
       }
 
 
@@ -159,3 +182,4 @@ var tracker = {
 
 tracker.imagesEl.addEventListener('click', tracker.onClick);
 tracker.displayImages();
+tracker.localStorageGet();
